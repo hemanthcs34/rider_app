@@ -2,6 +2,8 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:rider_app/MainScreens/MainScreen.dart';
+import 'package:rider_app/auth/SignUpScreen.dart';
+import 'package:rider_app/auth/loginScreen.dart';
 
 class Myspashscreen extends StatefulWidget {
   const Myspashscreen({super.key});
@@ -15,7 +17,7 @@ class _MyspashscreenState extends State<Myspashscreen> {
     Timer(const Duration(seconds: 3), () async {
       Navigator.push(
         context,
-        MaterialPageRoute(builder: (context) => const Mainscreen()),
+        MaterialPageRoute(builder: (context) => const Loginscreen()),
       );
     });
   }
