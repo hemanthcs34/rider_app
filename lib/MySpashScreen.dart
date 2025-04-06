@@ -1,7 +1,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+// ignore: unused_import
 import 'package:rider_app/MainScreens/MainScreen.dart';
+// ignore: unused_import
 import 'package:rider_app/auth/SignUpScreen.dart';
 import 'package:rider_app/auth/loginScreen.dart';
 

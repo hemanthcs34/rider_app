@@ -1,0 +1,30 @@
+{
+  "project_info": {
+    "project_number": "527718031865",
+    "firebase_url": "https://cloneuber-6f1a8-default-rtdb.firebaseio.com",
+    "project_id": "cloneuber-6f1a8",
+    "storage_bucket": "cloneuber-6f1a8.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:527718031865:android:7ce27af7fff13ed4525d28",
+        "android_client_info": {
+          "package_name": "com.example.riderapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAfg71NveKJfOyoHXRK7VZnCpAKK8HXewg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

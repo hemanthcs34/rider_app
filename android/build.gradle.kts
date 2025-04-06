@@ -1,3 +1,21 @@
+buildscript{
+    ext.kotlin_version= '1.3.50'
+    repositories {
+        google()
+        mavenCentral()
+    }
+
+    dependencies{
+        classpath 'con.android.tools.build:gradle:4.1.0'
+        classpath "org.jetbrains.kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.google.gns:google-services:4.3.10'
+    }
+
+
+
+
+
+
 allprojects {
     repositories {
         google()
@@ -18,4 +36,12 @@ subprojects {
 
 tasks.register<Delete>("clean") {
     delete(rootProject.layout.buildDirectory)
+}
+}
+plugins {
+  // ...
+
+  // Add the dependency for the Google services Gradle plugin
+  id("com.google.gms.google-services") version "4.4.2" apply false
+
 }
