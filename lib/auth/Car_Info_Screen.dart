@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:rider_app/global/global.dart';
-import 'package:rider_app/MySpashScreen.dart';
+import 'package:rider_app/tabScreens/hometabpage.dart'; // ✅ Updated import
 
 class CarInfoScreen extends StatefulWidget {
   const CarInfoScreen({super.key});
@@ -12,36 +12,44 @@ class CarInfoScreen extends StatefulWidget {
 
 class _CarInfoScreenState extends State<CarInfoScreen> {
   TextEditingController carModelTextEditingController = TextEditingController();
-  TextEditingController carNumberTextEditingController =
-      TextEditingController();
+  TextEditingController carNumberTextEditingController = TextEditingController();
   TextEditingController carColorTextEditingController = TextEditingController();
+
   List<String> carTypesList = ["uber-X", "uber-go", "bike"];
   String? selectedCarType;
+
   saveCarInfo() {
+    if (currentFirebaseUser == null) {
+      Fluttertoast.showToast(msg: "User not signed in");
+      return;
+    }
+
     Map driverCarInfoMap = {
-        "car_color": carColorTextEditingController.text.trim(),
-        "car_number": carNumberTextEditingController.text.trim(),
-        "car_model": carModelTextEditingController.text.trim(),
-        "car_type": selectedCarType,
-      };
-       driversRef.child(currentFirebaseUser!.uid).child("car_details").set(driverCarInfoMap);
-       Fluttertoast.showToast(
-         msg: "Car info has been saved",
-         toastLength: Toast.LENGTH_SHORT,
-         gravity: ToastGravity.BOTTOM,
-         timeInSecForIosWeb: 1,
-         backgroundColor: Colors.black,
-         textColor: Colors.white,
-         fontSize: 16.0,
-       );
-       
-       Navigator.push(
+      "car_color": carColorTextEditingController.text.trim(),
+      "car_number": carNumberTextEditingController.text.trim(),
+      "car_model": carModelTextEditingController.text.trim(),
+      "car_type": selectedCarType,
+    };
+
+    driversRef
+        .child(currentFirebaseUser!.uid)
+        .child("car_details")
+        .set(driverCarInfoMap)
+        .then((_) {
+      Fluttertoast.showToast(msg: "Car info saved ✅");
+
+      // ✅ Navigate directly to HomeTabPage
+      Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(
-          builder: (c) => const Myspashscreen(),
-        ),
-       );
+        MaterialPageRoute(builder: (c) => const Hometabpage()),
+        (route) => false,
+      );
+    }).catchError((error) {
+      Fluttertoast.showToast(msg: "Failed to save car info: $error");
+    });
   }
+
+  @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.black,
@@ -57,20 +65,16 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                   child: Image.asset("assets/images/image1.png"),
                 ),
                 const SizedBox(height: 10),
-                Text(
-                  "write your car info",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                const Text(
+                  "Write your car info",
+                  style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
+                const SizedBox(height: 20),
                 TextField(
                   controller: carModelTextEditingController,
                   style: const TextStyle(color: Colors.grey),
                   decoration: const InputDecoration(
                     labelText: "Car model",
-
                     hintText: "Car model",
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
@@ -78,19 +82,16 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
                     ),
-
                     labelStyle: TextStyle(color: Colors.grey),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ),
-                SizedBox(height: 10),
-
+                const SizedBox(height: 10),
                 TextField(
                   controller: carNumberTextEditingController,
                   style: const TextStyle(color: Colors.grey),
                   decoration: const InputDecoration(
                     labelText: "Car number",
-
                     hintText: "Car number",
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
@@ -98,18 +99,16 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
                     ),
-
                     labelStyle: TextStyle(color: Colors.grey),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
                   controller: carColorTextEditingController,
                   style: const TextStyle(color: Colors.grey),
                   decoration: const InputDecoration(
                     labelText: "Car color",
-
                     hintText: "Car color",
                     enabledBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
@@ -117,65 +116,48 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
                     focusedBorder: UnderlineInputBorder(
                       borderSide: BorderSide(color: Colors.grey),
                     ),
-
                     labelStyle: TextStyle(color: Colors.grey),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ),
-                SizedBox(height: 10),
-
+                const SizedBox(height: 10),
                 DropdownButton(
                   iconSize: 20,
-                  icon: Icon(Icons.map),
+                  icon: const Icon(Icons.map),
                   dropdownColor: Colors.black,
-                  hint: const Text(
-                    "please choose Car Type",
-                    style: TextStyle(fontSize: 14.0, color: Colors.grey),
-                  ),
+                  hint: const Text("Please choose car type", style: TextStyle(color: Colors.grey)),
                   value: selectedCarType,
                   onChanged: (newValue) {
                     setState(() {
                       selectedCarType = newValue.toString();
                     });
                   },
-                  items:
-                      carTypesList.map((car) {
-                        return DropdownMenuItem(
-                          child: Text(
-                            car,
-                            style: const TextStyle(color: Colors.grey),
-                          ),
-                          value: car,
-                        );
-                      }).toList(),
+                  items: carTypesList.map((car) {
+                    return DropdownMenuItem(
+                      value: car,
+                      child: Text(car, style: const TextStyle(color: Colors.grey)),
+                    );
+                  }).toList(),
                 ),
-
                 const SizedBox(height: 30),
-
                 ElevatedButton(
                   onPressed: () {
-                   if(carColorTextEditingController.text.isNotEmpty && carModelTextEditingController.text.isNotEmpty && carNumberTextEditingController.text.isNotEmpty && selectedCarType != null) {
-                     saveCarInfo();
-                     Navigator.pushNamedAndRemoveUntil(context, "mainScreen", (route) => false);
-                   } else {
-                     ScaffoldMessenger.of(context).showSnackBar(
-                       const SnackBar(
-                         content: Text("please fill all the fields"),
-                       ),
-                     );
-                   }
+                    if (carColorTextEditingController.text.isNotEmpty &&
+                        carModelTextEditingController.text.isNotEmpty &&
+                        carNumberTextEditingController.text.isNotEmpty &&
+                        selectedCarType != null) {
+                      saveCarInfo();
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Please fill all the fields")),
+                      );
+                    }
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 10,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   ),
-                  child: const Text(
-                    "Save now",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+                  child: const Text("Save Now", style: TextStyle(color: Colors.white, fontSize: 20)),
                 ),
               ],
             ),

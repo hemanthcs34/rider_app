@@ -23,42 +23,34 @@ class _SignupscreenState extends State<Signupscreen> {
     if (nameTextEditingController.text.length < 3) {
       showDialog(
         context: context,
-        builder: (BuildContext c) {
-          return const AlertDialog(
-            title: Text("Name"),
-            content: Text("Name must be at least 3 characters"),
-          );
-        },
+        builder: (BuildContext c) => const AlertDialog(
+          title: Text("Name"),
+          content: Text("Name must be at least 3 characters"),
+        ),
       );
     } else if (!emailTextEditingController.text.contains("@")) {
       showDialog(
         context: context,
-        builder: (BuildContext c) {
-          return const AlertDialog(
-            title: Text("Email"),
-            content: Text("Email address is not valid"),
-          );
-        },
+        builder: (BuildContext c) => const AlertDialog(
+          title: Text("Email"),
+          content: Text("Email address is not valid"),
+        ),
       );
     } else if (phoneTextEditingController.text.isEmpty) {
       showDialog(
         context: context,
-        builder: (BuildContext c) {
-          return const AlertDialog(
-            title: Text("Phone"),
-            content: Text("Phone number is required"),
-          );
-        },
+        builder: (BuildContext c) => const AlertDialog(
+          title: Text("Phone"),
+          content: Text("Phone number is required"),
+        ),
       );
     } else if (passwordTextEditingController.text.length < 6) {
       showDialog(
         context: context,
-        builder: (BuildContext c) {
-          return const AlertDialog(
-            title: Text("Password"),
-            content: Text("Password must be at least 6 characters"),
-          );
-        },
+        builder: (BuildContext c) => const AlertDialog(
+          title: Text("Password"),
+          content: Text("Password must be at least 6 characters"),
+        ),
       );
     } else {
       saveDriverInfo();
@@ -69,46 +61,44 @@ class _SignupscreenState extends State<Signupscreen> {
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (BuildContext c) {
-        return ProgressDialog(message: "processing, please wait...");
-      },
+      builder: (BuildContext c) => ProgressDialog(message: "Processing, please wait..."),
     );
   }
 
   saveDriverInfo() async {
     showLoadingDialog();
-    final User? firebaseUser =
-        (await firebaseAuth
-            .createUserWithEmailAndPassword(
-              email: emailTextEditingController.text.trim(),
-              password: passwordTextEditingController.text.trim(),
-            )
-            .catchError((msg) {
-              Navigator.pop(context);
-              Fluttertoast.showToast(msg: "Error:" + msg.toString());
-            })).user;
-    if (firebaseUser != null) {
-      Map driverMap = {
-        "id": firebaseUser.uid,
-        "name": nameTextEditingController.text.trim(),
-        "email": emailTextEditingController.text.trim(),
-        "phone": phoneTextEditingController.text.trim(),
-      };
-      driversRef.child(firebaseUser.uid).set(driverMap);
-      Fluttertoast.showToast(msg: "Account has been created");
-      Navigator.push(
-        context,
-        MaterialPageRoute(
-          builder: (context) => const CarInfoScreen(),
-        ),
+
+    try {
+      final UserCredential userCredential = await firebaseAuth.createUserWithEmailAndPassword(
+        email: emailTextEditingController.text.trim(),
+        password: passwordTextEditingController.text.trim(),
       );
-      currentFirebaseUser = firebaseUser;
-       Fluttertoast.showToast(msg: "Account has  been created");
-      Navigator.push(context, MaterialPageRoute(builder: (c) => const CarInfoScreen()));
-    }
-    else{
+
+      User? firebaseUser = userCredential.user;
+
+      if (firebaseUser != null) {
+        Map<String, dynamic> driverMap = {
+          "id": firebaseUser.uid,
+          "name": nameTextEditingController.text.trim(),
+          "email": emailTextEditingController.text.trim(),
+          "phone": phoneTextEditingController.text.trim(),
+        };
+
+        await driversRef.child(firebaseUser.uid).set(driverMap);
+
+        currentFirebaseUser = firebaseUser;
+
+        Navigator.pop(context);
+        Fluttertoast.showToast(msg: "Account has been created");
+
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (c) => const CarInfoScreen()),
+        );
+      }
+    } catch (error) {
       Navigator.pop(context);
-      Fluttertoast.showToast(msg: "Account has not been created");
+      Fluttertoast.showToast(msg: "Error: ${error.toString()}");
     }
   }
 
@@ -128,129 +118,82 @@ class _SignupscreenState extends State<Signupscreen> {
                   child: Image.asset("assets/images/image1.png"),
                 ),
                 const SizedBox(height: 10),
-                Text(
+                const Text(
                   "Register as a driver",
-                  style: TextStyle(
-                    fontSize: 30,
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                  ),
+                  style: TextStyle(fontSize: 30, color: Colors.white, fontWeight: FontWeight.bold),
                 ),
-
+                const SizedBox(height: 10),
                 TextField(
                   controller: nameTextEditingController,
                   style: const TextStyle(color: Colors.grey),
                   decoration: const InputDecoration(
                     labelText: "Name",
-
                     hintText: "Name",
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                     labelStyle: TextStyle(color: Colors.grey),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
                   keyboardType: TextInputType.emailAddress,
                   controller: emailTextEditingController,
                   style: const TextStyle(color: Colors.grey),
                   decoration: const InputDecoration(
-                    labelText: "email",
-
-                    hintText: "email",
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-
+                    labelText: "Email",
+                    hintText: "Email",
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                     labelStyle: TextStyle(color: Colors.grey),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
                   keyboardType: TextInputType.phone,
                   controller: phoneTextEditingController,
                   style: const TextStyle(color: Colors.grey),
                   decoration: const InputDecoration(
-                    labelText: "phone",
-
-                    hintText: "phone",
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-
+                    labelText: "Phone",
+                    hintText: "Phone",
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                     labelStyle: TextStyle(color: Colors.grey),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 10),
                 TextField(
-                  keyboardType: TextInputType.text,
                   obscureText: true,
                   controller: passwordTextEditingController,
                   style: const TextStyle(color: Colors.grey),
                   decoration: const InputDecoration(
-                    labelText: "password",
-
-                    hintText: "password",
-                    enabledBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-                    focusedBorder: UnderlineInputBorder(
-                      borderSide: BorderSide(color: Colors.grey),
-                    ),
-
+                    labelText: "Password",
+                    hintText: "Password",
+                    enabledBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
+                    focusedBorder: UnderlineInputBorder(borderSide: BorderSide(color: Colors.grey)),
                     labelStyle: TextStyle(color: Colors.grey),
                     hintStyle: TextStyle(color: Colors.grey, fontSize: 10),
                   ),
                 ),
-                SizedBox(height: 10),
+                const SizedBox(height: 20),
                 ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const CarInfoScreen(),
-                      ),
-                    );
-                  },
+                  onPressed: validateForm,
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 50,
-                      vertical: 10,
-                    ),
+                    padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                   ),
-                  child: const Text(
-                    "Create Account",
-                    style: TextStyle(color: Colors.white, fontSize: 20),
-                  ),
+                  child: const Text("Create Account", style: TextStyle(color: Colors.white, fontSize: 20)),
                 ),
                 TextButton(
                   onPressed: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => const Loginscreen(),
-                      ),
+                      MaterialPageRoute(builder: (context) => const Loginscreen()),
                     );
                   },
-                  child: const Text(
-                    "Already have an account? Login",
-                    style: TextStyle(color: Colors.white, fontSize: 15),
-                  ),
+                  child: const Text("Already have an account? Login", style: TextStyle(color: Colors.white, fontSize: 15)),
                 ),
               ],
             ),

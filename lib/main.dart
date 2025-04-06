@@ -6,19 +6,13 @@ import 'firebase_options.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
-       options: DefaultFirebaseOptions.currentPlatform,
+    options: DefaultFirebaseOptions.currentPlatform,
   );
   runApp(
     MyApp(
       child: MaterialApp(
-        title: 'rider app',
+        title: 'Rider App',
         theme: ThemeData(primarySwatch: Colors.blue),
-        // home: Scaffold(
-        //   appBar: AppBar(
-        //     title: const Text("welcome to the rider app"),
-        //     backgroundColor: Colors.blue,
-        //   ),
-        // ),
         home: const Myspashscreen(),
         debugShowCheckedModeBanner: false,
       ),
@@ -28,19 +22,20 @@ void main() async {
 
 class MyApp extends StatefulWidget {
   final Widget? child;
+
+  const MyApp({super.key, required this.child});
+
   static void restartApp(BuildContext context) {
-    context.findAncestorStateOfType<_MyApp>()!.restartApp();
+    context.findAncestorStateOfType<_MyAppState>()!.restartApp();
   }
 
-  MyApp({this.child});
   @override
-  State<StatefulWidget> createState() {
-    return _MyApp();
-  }
+  State<MyApp> createState() => _MyAppState();
 }
 
-class _MyApp extends State<MyApp> {
+class _MyAppState extends State<MyApp> {
   Key key = UniqueKey();
+
   void restartApp() {
     setState(() {
       key = UniqueKey();
@@ -49,7 +44,9 @@ class _MyApp extends State<MyApp> {
 
   @override
   Widget build(BuildContext context) {
-    // ignore: sort_child_properties_last
-    return KeyedSubtree(child: widget.child!, key: key);
+    return KeyedSubtree(
+      key: key,
+      child: widget.child!,
+    );
   }
 }
