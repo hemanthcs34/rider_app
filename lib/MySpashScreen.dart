@@ -17,6 +17,16 @@ class Myspashscreen extends StatefulWidget {
 class _MyspashscreenState extends State<Myspashscreen> {
   void startTimer() {
     Timer(const Duration(seconds: 3), () async {
+      if (await FirebaseAuth.instance.currentUser != null) {
+        currentFirebaseUser = FirebaseAuth.instance.currentUser;
+       Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const Hometabpage()),
+          );
+      } else {
+        // User is not signed in
+        currentFirebaseUser = null;
+      }
       currentFirebaseUser = FirebaseAuth.instance.currentUser;
 
       if (currentFirebaseUser != null) {

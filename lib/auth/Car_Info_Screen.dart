@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:rider_app/MySpashScreen.dart';
 import 'package:rider_app/global/global.dart';
 import 'package:rider_app/tabScreens/hometabpage.dart'; // ✅ Updated import
 
@@ -41,7 +42,7 @@ class _CarInfoScreenState extends State<CarInfoScreen> {
       // ✅ Navigate directly to HomeTabPage
       Navigator.pushAndRemoveUntil(
         context,
-        MaterialPageRoute(builder: (c) => const Hometabpage()),
+        MaterialPageRoute(builder: (c) => const Myspashscreen()),
         (route) => false,
       );
     }).catchError((error) {
